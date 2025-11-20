@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="cards">
+  <div class="card" style="max-width: 820px; margin: 0 auto; width:100%;">
+    <h2 style="margin-top:0;">Create your account</h2>
+    <p class="muted" style="margin-top:-6px;">Join and get personalized outfit ideas tailored to your style.</p>
+    <form method="post" class="form" autocomplete="on">
+      <div class="grid">
+        <label>Name
+          <input type="text" name="name" placeholder="Your name">
+          <span class="help">What should we call you?</span>
+        </label>
+        <label>Email
+          <input type="email" name="email" required placeholder="you@example.com" autocomplete="email">
+          <span class="help">We'll use this for login only.</span>
+        </label>
+        <label>Password
+          <input type="password" name="password" required placeholder="Create a strong password" autocomplete="new-password">
+          <span class="help">At least 8 characters recommended.</span>
+        </label>
+        <label>Gender
+          <select name="gender">
+            <option value="">Prefer not to say</option>
+            <option>male</option>
+            <option>female</option>
+            <option>non-binary</option>
+          </select>
+        </label>
+        <label>Style preference
+          <select name="style_preference">
+            <option value="">-</option>
+            <option>casual</option>
+            <option>formal</option>
+            <option>sporty</option>
+            <option>party</option>
+            <option>streetwear</option>
+          </select>
+          <span class="help">Helps tailor outfit suggestions.</span>
+        </label>
+        <label>Favorite colors (comma-separated hex or names)
+          <input type="text" name="favorite_colors" placeholder="#000000, #ffffff">
+          <span class="help">Example: #000000, navy, beige</span>
+        </label>
+        <label>Height (cm)
+          <input type="number" name="height_cm" step="0.1" placeholder="e.g., 175">
+        </label>
+        <label>Weight (kg)
+          <input type="number" name="weight_kg" step="0.1" placeholder="e.g., 70">
+        </label>
+        <label>Size
+          <input type="text" name="size" placeholder="M, 32, etc.">
+        </label>
+        <label>Fashion goals
+          <input type="text" name="fashion_goals" placeholder="professional, stylish, comfortable">
+        </label>
+      </div>
+      <button class="btn" type="submit">Sign up</button>
+    </form>
+    <p style="margin-top:12px;">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+  </div>
+</div>
+{% endblock %}

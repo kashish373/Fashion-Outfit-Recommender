@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+  <h1>Your AI-Powered Wardrobe & Stylist</h1>
+  <p>Organize your closet, set your style, and get personalized outfit ideas in seconds.</p>
+  <div class="cta">
+    {% if not current_user.is_authenticated %}
+      <a class="btn" href="{{ url_for('signup') }}">Create free account</a>
+      <a class="btn outline" href="{{ url_for('login') }}">I already have one</a>
+    {% else %}
+      <a class="btn" href="{{ url_for('dashboard') }}">Open Dashboard</a>
+    {% endif %}
+  </div>
+</section>
+
+<section class="container">
+  <div class="cards">
+    <div class="card">
+      <h3>Smart Wardrobe</h3>
+      <p>Add clothes with colors, seasons and occasions. Upload images for quick visual picks.</p>
+    </div>
+    <div class="card">
+      <h3>Personalized Picks</h3>
+      <p>Get outfit combos based on your style and context like weather or events.</p>
+    </div>
+    <div class="card">
+      <h3>ML-Ready Engine</h3>
+      <p>Built to extend with content-based and collaborative filtering in the future.</p>
+    </div>
+  </div>
+
+  <div class="cards" style="margin-top:18px;">
+    <div class="card">
+      <h3>How it works</h3>
+      <ol style="margin:0 0 0 18px;">
+        <li>Create an account and set your style preferences.</li>
+        <li>Add a few tops, bottoms and shoes to your wardrobe.</li>
+        <li>Go to Recommendations and select occasion and weather.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>Why you'll love it</h3>
+      <ul style="margin:0 0 0 18px;">
+        <li>Saves time choosing outfits.</li>
+        <li>Matches colors and styles smartly.</li>
+        <li>Looks great on mobile and desktop.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+{% endblock %}

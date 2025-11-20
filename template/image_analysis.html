@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>AI Image Analysis Results</h2>
+
+{% if analysis %}
+  <div class="cards" style="margin-bottom: 18px;">
+    <div class="card">
+      <h3 style="margin-top:0;">📸 Image Analysis</h3>
+      {% if image_url %}
+        <img src="{{ image_url }}" alt="Analyzed clothing" style="max-width: 300px; width: 100%; border-radius: 8px; margin-bottom: 16px;">
+      {% endif %}
+      
+      <h4>Detected Details:</h4>
+      <div class="grid" style="margin-top: 12px;">
+        <div>
+          <strong>Category:</strong> <span style="text-transform: capitalize;">{{ analysis.category or 'Not detected' }}</span>
+        </div>
+        <div>
+          <strong>Color:</strong> 
+          {% if analysis.color_hex %}
+            <span class="swatch" style="background: {{ analysis.color_hex }};"></span> {{ analysis.color_hex }}
+          {% else %}
+            Not detected
+          {% endif %}
+        </div>
+        <div>
+          <strong>Pattern:</strong> <span style="text-transform: capitalize;">{{ analysis.pattern or 'Not detected' }}</span>
+        </div>
+        <div>
+          <strong>Material:</strong> <span style="text-transform: capitalize;">{{ analysis.material or 'Not detected' }}</span>
+        </div>
+        <div>
+          <strong>Fit:</strong> <span style="text-transform: capitalize;">{{ analysis.fit or 'Not detected' }}</span>
+        </div>
+        <div>
+          <strong>Seasonality:</strong> <span style="text-transform: capitalize;">{{ analysis.seasonality or 'Not detected' }}</span>
+        </div>
+        {% if analysis.confidence %}
+        <div>
+          <strong>Confidence:</strong> {{ "%.0f"|format(analysis.confidence * 100) }}%
+        </div>
+        {% endif %}
+      </div>
+      
+      {% if analysis.colors and analysis.colors|length > 1 %}
+      <div style="margin-top: 16px;">
+        <strong>All Detected Colors:</strong>
+        <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+          {% for color, percentage in analysis.colors[:5] %}
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <span class="swatch" style="background: {{ color }}; width: 24px; height: 24px; border-radius: 4px;"></span>
+              <span class="muted">{{ color }} ({{ "%.0f"|format(percentage * 100) }}%)</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if analysis.style_description %}
+    <div class="card">
+      <h3 style="margin-top:0;">📝 Style Description</h3>
+      <p style="font-size: 1.1em; line-height: 1.6;">{{ analysis.style_description }}</p>
+    </div>
+    {% endif %}
+
+    <div class="card">
+      <h3 style="margin-top:0;">📍 Where to Wear</h3>
+      {% if analysis.where_to_wear and analysis.where_to_wear|length > 0 %}
+        <div class="list">
+          {% for occasion_desc in analysis.where_to_wear %}
+            <div class="list-item" style="margin-bottom: 12px; padding: 12px; background: #f8f9fa; border-radius: 6px;">
+              {{ occasion_desc }}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted">Occasions: {{ analysis.occasion_tags or 'Not detected' }}</p>
+      {% endif %}
+    </div>
+
+    {% if analysis.styling_tips and analysis.styling_tips|length > 0 %}
+    <div class="card">
+      <h3 style="margin-top:0;">💡 Styling Tips</h3>
+      <div class="list">
+        {% for tip in analysis.styling_tips %}
+          <div class="list-item" style="margin-bottom: 8px; padding: 8px; background: #fff3cd; border-left: 3px solid #ffc107; border-radius: 4px;">
+            {{ tip }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <h3 style="margin-top:0;">Use This Analysis</h3>
+      <p class="muted">The analyzed details have been automatically filled in the form below. You can edit any field before saving.</p>
+      <form method="post" action="{{ url_for('wardrobe') }}" class="form">
+        <input type="hidden" name="category" value="{{ analysis.category or '' }}">
+        <input type="hidden" name="color_hex" value="{{ analysis.color_hex or '' }}">
+        <input type="hidden" name="pattern" value="{{ analysis.pattern or '' }}">
+        <input type="hidden" name="material" value="{{ analysis.material or '' }}">
+        <input type="hidden" name="fit" value="{{ analysis.fit or '' }}">
+        <input type="hidden" name="seasonality" value="{{ analysis.seasonality or '' }}">
+        <input type="hidden" name="occasion_tags" value="{{ analysis.occasion_tags or '' }}">
+        {% if image_url %}
+          <input type="hidden" name="image_url" value="{{ image_url }}">
+        {% endif %}
+        <button class="btn" type="submit">Go to Wardrobe to Save Item</button>
+      </form>
+    </div>
+  </div>
+{% else %}
+  <div class="card">
+    <p class="muted">No analysis available. Please upload an image first.</p>
+    <a href="{{ url_for('wardrobe') }}" class="btn">Go to Wardrobe</a>
+  </div>
+{% endif %}
+
+{% endblock %}
+
+
+

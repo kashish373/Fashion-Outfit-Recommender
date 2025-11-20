@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="cards">
+  <div class="card" style="max-width: 720px; margin: 0 auto; width:100%;">
+    <h2 style="margin-top:0;">Welcome back</h2>
+    <p class="muted" style="margin-top:-6px;">Log in to access your dashboard and wardrobe.</p>
+    <form method="post" class="form" autocomplete="on">
+      <div class="grid">
+        <label>Email
+          <input type="email" name="email" required placeholder="you@example.com" autocomplete="email">
+          <span class="help">Use the email you registered with.</span>
+        </label>
+        <label>Password
+          <input type="password" name="password" required placeholder="••••••••" autocomplete="current-password">
+          <span class="help">Keep your account secure.</span>
+        </label>
+      </div>
+      <label style="display:flex; align-items:center; gap:8px; margin: 12px 0;">
+        <input type="checkbox" name="remember" value="1" style="width:auto;"> Remember me on this device
+      </label>
+      <button class="btn" type="submit">Login</button>
+    </form>
+    <p style="margin-top:12px;">Don't have an account? <a href="{{ url_for('signup') }}">Sign up</a></p>
+  </div>
+</div>
+{% endblock %}

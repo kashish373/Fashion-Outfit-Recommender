@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Wardrobe</h2>
+<div class="cards" style="margin-bottom: 18px;">
+  <div class="card">
+    <h3 style="margin-top:0;">Add an Item</h3>
+    <p class="muted" style="margin-top:-6px;">Capture basic details so we can build better outfits and visuals.</p>
+    <p class="muted" style="margin-top:-6px; color: #0066cc; font-weight: 500;">✨ AI-Powered: Upload an image and our AI will automatically detect category, color, pattern, material, fit, seasonality, and occasion!</p>
+    <form method="post" class="form" enctype="multipart/form-data">
+      <div class="grid">
+        <label>Category <span style="color: #666; font-size: 0.9em;">(or let AI detect from image)</span>
+      <select name="category">
+        <option value="">- Select or upload image for AI detection -</option>
+        <optgroup label="Top Wear">
+          <option>shirt</option>
+          <option>tshirt</option>
+          <option>top</option>
+          <option>blouse</option>
+          <option>sweater</option>
+          <option>hoodie</option>
+        </optgroup>
+        <optgroup label="Bottom Wear">
+          <option>pants</option>
+          <option>trousers</option>
+          <option>jeans</option>
+          <option>skirt</option>
+          <option>shorts</option>
+        </optgroup>
+        <optgroup label="Outerwear">
+          <option>jacket</option>
+          <option>coat</option>
+          <option>blazer</option>
+          <option>cardigan</option>
+        </optgroup>
+        <optgroup label="Shoes">
+          <option>shoes</option>
+          <option>sneakers</option>
+          <option>heels</option>
+          <option>boots</option>
+          <option>loafers</option>
+        </optgroup>
+        <optgroup label="Accessories">
+          <option>accessories</option>
+          <option>belt</option>
+          <option>watch</option>
+          <option>cap</option>
+          <option>hat</option>
+          <option>scarf</option>
+        </optgroup>
+      </select>
+      <span class="help">Choose the closest category. This helps build complete outfits.</span>
+    </label>
+    <label>Color
+      <div class="grid-2">
+        <input type="color" name="color_hex" value="#112233">
+        <div class="muted" data-color-readout>#112233</div>
+      </div>
+      <span class="help">Pick a color or leave empty if unsure.</span>
+    </label>
+    <label>Pattern
+      <input type="text" name="pattern" placeholder="plain, striped, floral">
+      <span class="help">Describe the pattern (e.g., plain, striped).</span>
+    </label>
+    <label>Material
+      <input type="text" name="material" placeholder="cotton, denim, silk">
+      <span class="help">Fabric type helps with seasonality and pairing.</span>
+    </label>
+    <label>Fit
+      <input type="text" name="fit" placeholder="regular, slim, oversized">
+    </label>
+    <label>Seasonality
+      <input type="text" name="seasonality" placeholder="summer, winter, all-season">
+    </label>
+    <label>Occasions (comma-separated)
+      <input type="text" name="occasion_tags" placeholder="work, party, gym">
+    </label>
+    <label>Brand
+      <input type="text" name="brand">
+    </label>
+    <label>Price
+      <input type="number" step="0.01" name="price">
+    </label>
+    <label>Size
+      <input type="text" name="size">
+    </label>
+    <label>Image URL
+      <input type="url" name="image_url" placeholder="https://...">
+    </label>
+    <label>Or Upload Image (AI Analysis Enabled)
+      <input type="file" name="image_file" accept="image/*">
+      <div class="image-preview" aria-label="Image preview area"><span class="muted">No image</span></div>
+      <span class="help">Upload a clothing image and our AI will automatically analyze and fill in the details above!</span>
+    </label>
+      </div>
+      <button class="btn" type="submit">Add Item</button>
+    </form>
+    {% if session.get('last_analysis') %}
+      <div style="margin-top: 12px; padding: 12px; background: #e7f3ff; border-radius: 6px; border-left: 3px solid #0066cc;">
+        <p style="margin: 0 0 8px 0; font-weight: 500;">✨ AI Analysis Available</p>
+        <p style="margin: 0 0 12px 0; font-size: 0.9em;">View detailed analysis results with styling tips and where to wear suggestions.</p>
+        <a href="{{ url_for('wardrobe_analysis') }}" class="btn" style="background: #0066cc; color: white;">View Detailed Analysis</a>
+      </div>
+    {% endif %}
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0;">Bulk Import (CSV)</h3>
+    <p class="muted" style="margin-top:-6px;">Upload a CSV to add many items at once. Columns may include: <code>category</code>, <code>color_hex</code>, <code>pattern</code>, <code>material</code>, <code>fit</code>, <code>seasonality</code>, <code>occasion_tags</code>, <code>brand</code>, <code>price</code>, <code>size</code>, <code>image_url</code>. We also accept common catalog fields like <code>articleType</code>, <code>subCategory</code>, <code>baseColour</code>, <code>season</code>, <code>usage</code>.</p>
+    <form method="post" class="form" action="{{ url_for('wardrobe_import_csv') }}" enctype="multipart/form-data">
+      <div class="grid">
+        <label>CSV file
+          <input type="file" name="csv_file" accept=".csv" required>
+        </label>
+      </div>
+      <button class="btn" type="submit">Import CSV</button>
+      <p class="muted" style="margin-top:8px;">Tip: you can use <code>instance/sample_dataset.csv</code> as a template.</p>
+    </form>
+  </div>
+</div>
+
+<h3>Your Items</h3>
+
+<div style="margin-bottom: 12px; display: flex; gap: 8px; align-items: center;">
+  <form method="post" action="{{ url_for('wardrobe_delete_multiple') }}" id="bulkDeleteForm" 
+        onsubmit="return confirm('Are you sure you want to delete the selected items?');" style="display: inline;">
+    <button type="submit" class="btn" style="background: #dc3545; color: white;" id="bulkDeleteBtn" disabled>
+      🗑️ Delete Selected (0)
+    </button>
+  </form>
+  <button type="button" class="btn" style="background: #6c757d; color: white;" onclick="selectAllItems(true)">
+    ✓ Select All
+  </button>
+  <button type="button" class="btn" style="background: #6c757d; color: white;" onclick="selectAllItems(false)">
+    ✗ Deselect All
+  </button>
+</div>
+
+{% set order = ['Top Wear', 'Bottom Wear', 'Outerwear', 'Shoes', 'Accessories', 'Other'] %}
+{% for group_name in order %}
+  {% set group_items = groups.get(group_name, []) %}
+  {% if group_items %}
+    <div class="card" style="margin-top: 12px;">
+      <h4 style="margin-top:0;">{{ group_name }}</h4>
+      <div class="list">
+      {% for item in group_items %}
+        <div class="list-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #e0e0e0;">
+          <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+            <input type="checkbox" name="item_ids" value="{{ item.id }}" class="item-checkbox" 
+                   style="width: 20px; height: 20px; cursor: pointer;" onchange="updateBulkDeleteBtn()">
+            <div style="flex: 1;">
+              <div>
+                <strong>{{ item.category }}</strong>
+                {% if item.brand %} <span>• {{ item.brand }}</span>{% endif %}
+                {% if item.size %} <span>• Size {{ item.size }}</span>{% endif %}
+                {% if item.color_hex %} <span class="swatch" data-color="{{ item.color_hex }}" style="background-color: {{ item.color_hex }}; width: 20px; height: 20px; display: inline-block; border-radius: 3px; vertical-align: middle; margin: 0 4px;"></span> {{ item.color_hex }}{% endif %}
+              </div>
+              <div style="font-size: 0.9em; color: #666; margin-top: 4px;">
+                {% if item.pattern %} <span>Pattern: {{ item.pattern }}</span>{% endif %}
+                {% if item.material %} <span>• Material: {{ item.material }}</span>{% endif %}
+                {% if item.fit %} <span>• Fit: {{ item.fit }}</span>{% endif %}
+                {% if item.seasonality %} <span>• Season: {{ item.seasonality }}</span>{% endif %}
+                {% if item.occasion_tags %} <span>• Occasions: {{ item.occasion_tags }}</span>{% endif %}
+              </div>
+              {% if item.image_url %}
+                <img class="thumb" src="{{ item.image_url }}" alt="{{ item.category }}" style="max-width: 100px; margin-top: 8px; border-radius: 4px;">
+              {% endif %}
+            </div>
+          </div>
+          <div style="margin-left: 12px;">
+            <form method="post" action="{{ url_for('wardrobe_delete', item_id=item.id) }}" style="display: inline;" 
+                  onsubmit="return confirm('Are you sure you want to delete this item from your wardrobe?');">
+              <button type="submit" class="btn" style="background: #dc3545; color: white; padding: 6px 12px; font-size: 0.9em;">🗑️ Delete</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
+
+<script>
+function updateBulkDeleteBtn() {
+  const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+  const btn = document.getElementById('bulkDeleteBtn');
+  const count = checkboxes.length;
+  
+  if (count > 0) {
+    btn.disabled = false;
+    btn.textContent = `🗑️ Delete Selected (${count})`;
+  } else {
+    btn.disabled = true;
+    btn.textContent = '🗑️ Delete Selected (0)';
+  }
+}
+
+// Select all functionality
+function selectAllItems(selectAll) {
+  const checkboxes = document.querySelectorAll('.item-checkbox');
+  checkboxes.forEach(cb => cb.checked = selectAll);
+  updateBulkDeleteBtn();
+}
+</script>
+
+{% if not items %}
+  <p>No items yet. Add your first piece above.</p>
+{% endif %}
+{% endblock %}

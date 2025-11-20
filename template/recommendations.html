@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Smart Outfit Recommendations</h2>
+<div class="cards" style="margin-bottom: 18px;">
+  <div class="card">
+    <h3 style="margin-top:0;">🎯 Tell Us About Your Day</h3>
+    <p class="muted" style="margin-top:-6px;">Provide details about where you're going and the conditions. Our AI will create the perfect outfit combination!</p>
+    <form method="post" class="form">
+      <div class="grid">
+        <label>Occasion / Event
+          <select name="occasion">
+            <option value="" {% if not context or context.get('occasion') == '' %}selected{% endif %}>- Select Occasion -</option>
+            <option value="work" {% if context and context.get('occasion') == 'work' %}selected{% endif %}>💼 Work / Office</option>
+            <option value="formal" {% if context and context.get('occasion') == 'formal' %}selected{% endif %}>🎩 Formal Event</option>
+            <option value="casual" {% if context and context.get('occasion') == 'casual' %}selected{% endif %}>👕 Casual Outing</option>
+            <option value="date" {% if context and context.get('occasion') == 'date' %}selected{% endif %}>💕 Date / Dinner</option>
+            <option value="party" {% if context and context.get('occasion') == 'party' %}selected{% endif %}>🎉 Party / Nightlife</option>
+            <option value="wedding" {% if context and context.get('occasion') == 'wedding' %}selected{% endif %}>💒 Wedding</option>
+            <option value="sports" {% if context and context.get('occasion') == 'sports' %}selected{% endif %}>🏃 Sports / Gym</option>
+            <option value="shopping" {% if context and context.get('occasion') == 'shopping' %}selected{% endif %}>🛍️ Shopping</option>
+            <option value="travel" {% if context and context.get('occasion') == 'travel' %}selected{% endif %}>✈️ Travel</option>
+          </select>
+          <span class="help">What's the occasion? This helps us choose appropriate styles.</span>
+        </label>
+        
+        <label>Climate / Weather
+          <select name="weather">
+            <option value="" {% if not context or context.get('weather') == '' %}selected{% endif %}>- Select Weather -</option>
+            <option value="hot" {% if context and context.get('weather') == 'hot' %}selected{% endif %}>☀️ Hot / Summer</option>
+            <option value="warm" {% if context and context.get('weather') == 'warm' %}selected{% endif %}>🌤️ Warm / Mild</option>
+            <option value="cool" {% if context and context.get('weather') == 'cool' %}selected{% endif %}>🌥️ Cool / Breeze</option>
+            <option value="cold" {% if context and context.get('weather') == 'cold' %}selected{% endif %}>❄️ Cold / Winter</option>
+            <option value="rainy" {% if context and context.get('weather') == 'rainy' %}selected{% endif %}>🌧️ Rainy / Wet</option>
+            <option value="humid" {% if context and context.get('weather') == 'humid' %}selected{% endif %}>💨 Humid</option>
+          </select>
+          <span class="help">Current weather conditions help choose appropriate materials and layers.</span>
+        </label>
+        
+        <label>Time of Day
+          <select name="time_of_day">
+            <option value="" {% if not context or context.get('time') == '' %}selected{% endif %}>- Select Time -</option>
+            <option value="morning" {% if context and context.get('time') == 'morning' %}selected{% endif %}>🌅 Morning (6am-12pm)</option>
+            <option value="afternoon" {% if context and context.get('time') == 'afternoon' %}selected{% endif %}>☀️ Afternoon (12pm-5pm)</option>
+            <option value="evening" {% if context and context.get('time') == 'evening' %}selected{% endif %}>🌆 Evening (5pm-9pm)</option>
+            <option value="night" {% if context and context.get('time') == 'night' %}selected{% endif %}>🌙 Night (9pm+)</option>
+          </select>
+          <span class="help">Time of day influences color choices and formality level.</span>
+        </label>
+        
+        <label>Activity Level
+          <select name="activity">
+            <option value="" {% if not context or context.get('activity') == '' %}selected{% endif %}>- Select Activity -</option>
+            <option value="sedentary" {% if context and context.get('activity') == 'sedentary' %}selected{% endif %}>💺 Sedentary (sitting, office)</option>
+            <option value="light" {% if context and context.get('activity') == 'light' %}selected{% endif %}>🚶 Light (walking, casual)</option>
+            <option value="moderate" {% if context and context.get('activity') == 'moderate' %}selected{% endif %}>🏃 Moderate (active, events)</option>
+            <option value="high" {% if context and context.get('activity') == 'high' %}selected{% endif %}>⚡ High (sports, gym)</option>
+          </select>
+          <span class="help">How active will you be? This affects fit and material recommendations.</span>
+        </label>
+        
+        <label>Style Preference (for this outfit)
+          <select name="style_preference">
+            <option value="" {% if not context or context.get('style') == '' %}selected{% endif %}>- Use Default -</option>
+            <option value="casual" {% if context and context.get('style') == 'casual' %}selected{% endif %}>Casual</option>
+            <option value="smart-casual" {% if context and context.get('style') == 'smart-casual' %}selected{% endif %}>Smart Casual</option>
+            <option value="streetwear" {% if context and context.get('style') == 'streetwear' %}selected{% endif %}>Streetwear</option>
+            <option value="formal" {% if context and context.get('style') == 'formal' %}selected{% endif %}>Formal</option>
+            <option value="athleisure" {% if context and context.get('style') == 'athleisure' %}selected{% endif %}>Athleisure</option>
+          </select>
+          <span class="help">Override your default style preference for this specific outfit.</span>
+        </label>
+        
+        <label>Color Theme Preference
+          <select name="color_theme">
+            <option value="" {% if not context or context.get('color_theme') == '' %}selected{% endif %}>- No Preference -</option>
+            <option value="neutral" {% if context and context.get('color_theme') == 'neutral' %}selected{% endif %}>🎨 Neutral (black, white, gray, beige)</option>
+            <option value="bold" {% if context and context.get('color_theme') == 'bold' %}selected{% endif %}>🌈 Bold (bright colors)</option>
+            <option value="pastel" {% if context and context.get('color_theme') == 'pastel' %}selected{% endif %}>🌸 Pastel (soft colors)</option>
+            <option value="dark" {% if context and context.get('color_theme') == 'dark' %}selected{% endif %}>🌑 Dark (dark tones)</option>
+            <option value="monochrome" {% if context and context.get('color_theme') == 'monochrome' %}selected{% endif %}>⚫ Monochrome (single color)</option>
+          </select>
+          <span class="help">Prefer a specific color theme for this outfit?</span>
+        </label>
+        
+        <label style="grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; padding: 12px; background: #f8f9fa; border-radius: 8px; border: 2px solid #e0e0e0;">
+          <input type="checkbox" name="use_image_matching" {% if use_image_matching %}checked{% endif %} style="width: 20px; height: 20px; cursor: pointer;">
+          <div>
+            <strong>🖼️ Use Image-Based Matching</strong>
+            <span class="help" style="display: block; margin-top: 4px; font-size: 0.9em;">
+              Enable AI-powered visual matching using image similarity analysis. Requires items with uploaded images.
+            </span>
+          </div>
+        </label>
+      </div>
+      <div style="margin-top: 12px;">
+        <button class="btn" type="submit">✨ Get AI Recommendations</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if outfits %}
+  <div class="cards" style="margin-top: 18px;">
+    <div class="card">
+      <h3 style="margin-top:0;">
+        {% if recommendation_type == 'image-based' %}
+          🖼️ Image-Based Outfit Recommendations
+        {% else %}
+          ✨ Rule-Based Outfit Recommendations
+        {% endif %}
+      </h3>
+      <p class="muted">
+        {% if recommendation_type == 'image-based' %}
+          Based on visual similarity analysis of your clothing images. Best matching outfits are shown first.
+        {% else %}
+          Based on your wardrobe and preferences. Best matches are shown first.
+        {% endif %}
+      </p>
+      {% if recommendation_type == 'image-based' %}
+        <div style="background: #e3f2fd; padding: 8px; border-radius: 4px; margin-top: 8px; font-size: 0.9em;">
+          💡 <strong>Tip:</strong> Image matching analyzes the visual features (colors, patterns, textures) of your clothing items to find the most harmonious combinations.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  
+  <div class="outfits" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; margin-top: 18px;">
+    {% for outfit in outfits %}
+      <div class="card" style="padding: 16px;">
+        <h4 style="margin-top:0; margin-bottom: 12px;">Outfit #{{ loop.index }}</h4>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          {% for item in outfit %}
+            <div class="piece" style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; background: #f8f9fa;">
+              <div class="label" style="margin-bottom: 8px;">
+                <strong style="text-transform: capitalize;">{{ item.category }}</strong>
+                {% if item.brand %} <span>• {{ item.brand }}</span>{% endif %}
+                {% if item.size %} <span>• Size {{ item.size }}</span>{% endif %}
+              </div>
+              
+              <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
+                {% if item.color_hex %}
+                  <span class="swatch" style="background-color: {{ item.color_hex | e }}; width: 24px; height: 24px; border-radius: 4px; display: inline-block;"></span>
+                  <span style="font-size: 0.9em; color: #666;">{{ item.color_hex }}</span>
+                {% endif %}
+                {% if item.pattern %}
+                  <span style="font-size: 0.85em; color: #666; text-transform: capitalize;">• {{ item.pattern }}</span>
+                {% endif %}
+                {% if item.material %}
+                  <span style="font-size: 0.85em; color: #666; text-transform: capitalize;">• {{ item.material }}</span>
+                {% endif %}
+              </div>
+              
+              {% if item.image_url %}
+                <img class="thumb" src="{{ item.image_url }}" alt="{{ item.category }}" style="max-width: 100%; height: auto; border-radius: 4px; margin-top: 8px;">
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="card">
+    {% if use_image_matching %}
+      <p class="muted">
+        <strong>No image-based outfit suggestions found.</strong><br>
+        To use image-based matching, you need:
+      </p>
+      <ul style="margin: 12px 0; padding-left: 20px; color: #666;">
+        <li>Items with uploaded images in your wardrobe</li>
+        <li>At least items in multiple categories (tops, bottoms, and optionally shoes/accessories)</li>
+      </ul>
+      <div style="margin-top: 12px;">
+        <a href="{{ url_for('wardrobe') }}" class="btn" style="margin-right: 8px;">➕ Add Items with Images</a>
+        <form method="post" style="display: inline;">
+          <input type="hidden" name="occasion" value="{{ context.get('occasion', '') }}">
+          <input type="hidden" name="weather" value="{{ context.get('weather', '') }}">
+          <input type="hidden" name="time_of_day" value="{{ context.get('time', '') }}">
+          <input type="hidden" name="activity" value="{{ context.get('activity', '') }}">
+          <input type="hidden" name="style_preference" value="{{ context.get('style', '') }}">
+          <input type="hidden" name="color_theme" value="{{ context.get('color_theme', '') }}">
+          <button type="submit" class="btn" style="background: #6c757d;">🔄 Try Rule-Based Recommendations</button>
+        </form>
+      </div>
+    {% else %}
+      <p class="muted">No outfit suggestions yet. Try adding tops, bottoms and shoes to your wardrobe for better combinations.</p>
+      <a href="{{ url_for('wardrobe') }}" class="btn" style="margin-top: 12px;">Go to Wardrobe</a>
+    {% endif %}
+  </div>
+{% endif %}
+{% endblock %}

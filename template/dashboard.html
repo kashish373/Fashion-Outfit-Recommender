@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Dashboard</h2>
+<div class="cards" style="margin-bottom: 18px;">
+  <div class="card">
+    <h3>Your Wardrobe</h3>
+    <p>{{ items_count }} items</p>
+    <a class="btn" href="{{ url_for('wardrobe') }}">Manage Wardrobe</a>
+  </div>
+  <div class="card">
+    <h3>Get Recommendations</h3>
+    <p>Tell us the context and get styled. Includes image-based matching option.</p>
+    <a class="btn" href="{{ url_for('recommendations') }}">Recommend Outfits</a>
+  </div>
+</div>
+
+<div class="cards">
+  <div class="card">
+    <h3>Your Profile & Measurements</h3>
+    <form method="post" class="form" novalidate>
+      <div class="grid">
+        <label>
+          Height (cm)
+          <input type="number" step="0.1" name="height_cm" placeholder="e.g., 175" value="{{ current_user.height_cm or '' }}" />
+        </label>
+        <label>
+          Weight (kg)
+          <input type="number" step="0.1" name="weight_kg" placeholder="e.g., 70" value="{{ current_user.weight_kg or '' }}" />
+        </label>
+        <label>
+          Size
+          <input type="text" name="size" placeholder="e.g., M / 32" value="{{ current_user.size or '' }}" />
+        </label>
+        <label>
+          Style Preference
+          <select name="style_preference">
+            {% set style = current_user.style_preference or '' %}
+            <option value="" {{ 'selected' if style == '' else '' }}>-- Select --</option>
+            <option value="casual" {{ 'selected' if style == 'casual' else '' }}>Casual</option>
+            <option value="smart-casual" {{ 'selected' if style == 'smart-casual' else '' }}>Smart Casual</option>
+            <option value="streetwear" {{ 'selected' if style == 'streetwear' else '' }}>Streetwear</option>
+            <option value="formal" {{ 'selected' if style == 'formal' else '' }}>Formal</option>
+            <option value="athleisure" {{ 'selected' if style == 'athleisure' else '' }}>Athleisure</option>
+          </select>
+        </label>
+        <label style="grid-column: 1 / -1;">
+          Favorite Colors (comma separated hex or names)
+          <input type="text" name="favorite_colors" placeholder="#000000, navy, beige" value="{{ current_user.favorite_colors or '' }}" />
+          <span class="help">Example: #1f2937, #7c5cff, white</span>
+        </label>
+        <label style="grid-column: 1 / -1;">
+          Fashion Goals
+          <input type="text" name="fashion_goals" placeholder="e.g., office-ready capsule wardrobe" value="{{ current_user.fashion_goals or '' }}" />
+        </label>
+      </div>
+      <div style="margin-top:12px;">
+        <button class="btn" type="submit">Save & Refresh Analysis</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Body Analysis & Suggestions</h3>
+    {% if analysis %}
+      <p class="muted">
+        {% if analysis.bmi %}
+          BMI: <strong>{{ analysis.bmi }}</strong> ({{ analysis.bmi_category }})
+        {% else %}
+          Provide your height and weight to compute BMI.
+        {% endif %}
+      </p>
+      <div class="list">
+        {% for block in analysis.suggestions %}
+          <div class="list-item" style="display:block;">
+            <div class="label"><strong>{{ block.title }}</strong></div>
+            <ul style="margin:8px 0 0 18px; padding:0;">
+              {% for it in block['items'] %}
+                <li style="margin:4px 0;">{{ it }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endfor %}
+      </div>
+      {% if analysis.favorite_colors %}
+        <p class="muted" style="margin-top: 10px;">Your favorites:
+          {% for c in analysis.favorite_colors %}
+            <span class="swatch" title="{{ c }}" style="background: {{ c }};"></span>
+          {% endfor %}
+        </p>
+      {% endif %}
+    {% else %}
+      <p class="muted">No analysis available.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
